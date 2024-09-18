@@ -1,0 +1,14 @@
+a7053797235da5c5d3436bd1b8cba8da *DESCRIPTION
+fe7cbf9dbca31dc39908ca9209adf1f5 *NAMESPACE
+4f16a4062709b6d9795f58a21f1db705 *NEWS.md
+296838c918eda49bbc84ee61fa61251e *R/graph.r
+4358ece309c7859ee0e4dd5e41fa55d8 *R/reexports.r
+ee4052913c1ecbe3fc15e81182555680 *R/zzz.R
+39c37bb867f1ebb158c32962330c64ee *README.md
+3ae54823cd7abe5ffddc473726cbb083 *build/vignette.rds
+09f605f45efde0d6089b6b6ccb524b42 *inst/doc/ggtangle.R
+99b50d0022d7d494aa4975bbc5697f41 *inst/doc/ggtangle.Rmd
+4568b52fc81c0fbb34c4251c370db351 *inst/doc/ggtangle.html
+da27a6523a15f35ddb7f1c15c834ff31 *man/geom_edge.Rd
+a87354873cd9cef2747f601895908e38 *man/reexports.Rd
+99b50d0022d7d494aa4975bbc5697f41 *vignettes/ggtangle.Rmd
