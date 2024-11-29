@@ -77,3 +77,46 @@ p %<+% dd +
     geom_text(aes(label=label), nudge_y = .2) + 
     coord_fixed()
 
+## ----fig.width=13, fig.height=7-----------------------------------------------
+set.seed(123)
+x <- list(A = letters[1:10], B=letters[5:12], C=letters[sample(1:26, 15)])
+
+p1 <- cnetplot(x, node_label = "none", 
+          color_category='firebrick', color_item='steelblue')
+p2 <- cnetplot(x, node_label = "all", size_category=2)
+p3 <- cnetplot(x, node_label = "category")
+p4 <- cnetplot(x, node_label = "item")
+p5 <- cnetplot(x, node_label = "share")
+p6 <- cnetplot(x, node_label = "exclusive")
+
+plot_list(p1, p2, p3, p4, p5, p6, ncol=3, tag_levels = 'A')
+
+## ----fig.width=8, fig.height=5------------------------------------------------
+g1 <- cnetplot(x, node_label = letters[1:5]) 
+
+options(cnetplot_subset = TRUE)
+g2 <- cnetplot(x, node_label = letters[1:5])
+
+plot_list(g1, g2)
+
+## ----fig.width=11, fig.height=8-----------------------------------------------
+set.seed(123)
+d <- setNames(rnorm(26), letters)
+
+# color items/genes with associated data
+p7 <- cnetplot(x, foldChange=d) + 
+    scale_color_gradient2(name='associated data', low='darkgreen', high='firebrick')
+
+# filter items/genes by log2FC values to label
+p8 <- cnetplot(x, foldChange=d, node_labe = ">1") + 
+    scale_color_gradient2(name='associated data', low='darkgreen', high='firebrick')
+
+# Highlight categories
+p9 <- cnetplot(x, foldChange=d, hilight=c("B", "C")) + 
+    scale_color_gradient2(name='associated data', low='darkgreen', high='firebrick')
+
+# label in separate layer allows more detail adjustment
+p10 <- cnetplot(x, node_label="none")
+p10 <- p10 + geom_cnet_label(node_label = 'all', fontface='bold')
+plot_list(p7, p8, p9, p10, ncol=2, tag_levels = 'A')
+

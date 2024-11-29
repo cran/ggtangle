@@ -54,11 +54,11 @@ cnetplot(
 
 \item{size_item}{relative size of the item (e.g., genes)}
 
-\item{color_edge}{color of edge}
+\item{color_edge}{color of edge, e.g., "black". If \code{color = "category"}, then edges will be colored based on the category information.}
 
 \item{size_edge}{relative size of edge}
 
-\item{node_label}{one of 'all', 'none', 'category' and 'item'}
+\item{node_label}{one of 'all', 'none', 'category', 'item', 'exclusive' or 'share'}
 
 \item{foldChange}{numeric values to color the item (e.g, foldChange of gene expression values)}
 
