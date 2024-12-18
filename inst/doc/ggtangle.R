@@ -17,7 +17,7 @@ library(ggtangle)
 library(aplot)
 library(ggfun)
 
-net <- erdos.renyi.game(10, .5)
+net <- sample_gnp(10, .5)
 
 V(net)$name = letters[1:10]
 E(net)$weight = abs(rnorm(length(E(net))))
@@ -55,7 +55,7 @@ d <- data.frame(label=V(net)$name, expression=expr)
 p %<+% d + geom_point(aes(color = expression), size=6) +
     scale_color_viridis_c()
 
-## ----fig.width=5.8, fig.height=8----------------------------------------------
+## ----fig.width=8, fig.height=5.8----------------------------------------------
 flow_info <- data.frame(from = LETTERS[c(1,2,3,3,4,5,6)],
                         to = LETTERS[c(5,5,5,6,7,6,7)])
 
@@ -68,7 +68,7 @@ dd <- data.frame(
 
 g <- igraph::graph_from_data_frame(flow_info)
 
-p <- ggplot(g)  + geom_edge()
+p <- ggplot(g, layout='kk')  + geom_edge()
 
 library(scatterpie)
 

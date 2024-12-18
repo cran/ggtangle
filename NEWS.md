@@ -1,3 +1,9 @@
+# ggtangle 0.0.6
+
++ update DESCRIPTION to add citation (2024-12-17, Tue)
+  - G Yu (2018) <doi:10.1093/molbev/msy194>
++ allows using layout name (e.g., 'nicely', 'kk') as in 'ggraph' (2024-12-13, Fri)
+
 # ggtangle 0.0.5
 
 + allows `color_edge = "category"` to color edges based on the category information in `cnetplot()` (2024-11-29, Fri)
