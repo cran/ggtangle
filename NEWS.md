@@ -1,3 +1,8 @@
+# ggtangle 0.0.8
+
++ disable `geom_point()` for item nodes in `cnetplot()` when `size_item=0` (2025-11-16, Thu)
++ use `linewidth` instead of `size` aesthetic for graph edge (2025-09-15, Mon)
+
 # ggtangle 0.0.7
 
 + consistency with upcoming ggplot2 version (4.0.0) (2025-06-30, Mon)
