@@ -1,6 +1,6 @@
 Package: ggtangle
 Title: Draw Network with Data
-Version: 0.0.8
+Version: 0.0.9
 Authors@R: c(
     person(given = "Guangchuang", family = "Yu", email = "guangchuangyu@gmail.com",   role  = c("aut", "cre"), comment = c(ORCID = "0000-0002-6485-8781")))
 Description: Extends the 'ggplot2' plotting system to support network visualization. Inspired by the 'Method 1' in 'ggtree' (G Yu (2018) <doi:10.1093/molbev/msy194>), 'ggtangle' is designed to work with network associated data. 
@@ -14,9 +14,9 @@ License: Artistic-2.0
 Encoding: UTF-8
 RoxygenNote: 7.3.3
 NeedsCompilation: no
-Packaged: 2025-11-06 01:23:20 UTC; HUAWEI
+Packaged: 2025-11-30 09:01:40 UTC; HUAWEI
 Author: Guangchuang Yu [aut, cre] (ORCID:
     <https://orcid.org/0000-0002-6485-8781>)
 Maintainer: Guangchuang Yu <guangchuangyu@gmail.com>
 Repository: CRAN
-Date/Publication: 2025-11-06 03:10:02 UTC
+Date/Publication: 2025-11-30 09:20:09 UTC
