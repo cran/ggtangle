@@ -1,13 +1,12 @@
-## ----include=FALSE------------------------------------------------------------
-knitr::opts_chunk$set(warning = FALSE,
-                      message = TRUE)
-
+## -----------------------------------------------------------------------------
+#| include: false
 library(yulab.utils)
 library(igraph)
 library(ggplot2)
 library(ggtangle)
 library(aplot)
 library(ggfun)
+
 
 ## -----------------------------------------------------------------------------
 library(yulab.utils)
@@ -26,7 +25,10 @@ E(net)$type = sample(LETTERS[1:3], length(E(net)), replace=TRUE)
 p <- ggplot(net) + geom_edge()
 p
 
-## ----fig.width=15, fig.height=10----------------------------------------------
+
+## -----------------------------------------------------------------------------
+#| fig-width: 15
+#| fig-height: 10
 p1 <- p + geom_point(size=6, color='steelblue')
 p2 <- p + geom_point(aes(color = label %in% letters[1:5]), size=6)
 p3 <- p + geom_point(aes(size = igraph::degree(net)), color='steelblue') 
@@ -34,28 +36,71 @@ p4 <- p + geom_point(aes(shape = label %in% letters[1:5]), color='steelblue', si
 
 plot_list(p1, p2, p3, p4, ncol=2)
 
-## ----fig.width=12, fig.height=5-----------------------------------------------
+
+## -----------------------------------------------------------------------------
+#| fig-width: 12
+#| fig-height: 5
 p5 <- p + geom_label(aes(label=label, color=label %in% letters[1:5]), size=5)
 
 p6 <- p + geom_label(aes(label=label), size=5, data=ggtree::td_filter(label %in% letters[1:5]))
 
 plot_list(p5, p6)
 
-## ----fig.width=18, fig.height=6.5---------------------------------------------
+
+## -----------------------------------------------------------------------------
+#| fig-width: 18
+#| fig-height: 6.5
 p7 <- ggplot(net) + geom_edge(aes(linewidth=weight)) 
 p8 <- ggplot(net) + geom_edge(aes(color=type)) 
 p9 <- ggplot(net) + geom_edge(aes(linetype=type)) 
 
 plot_list(p7, p8, p9, ncol=3)
 
-## ----fig.width=8.8, fig.height=6.5--------------------------------------------
+
+## -----------------------------------------------------------------------------
+#| fig-width: 7
+#| fig-height: 6
+ggplot(net, layout='circular') + geom_edge() + geom_point(size=5, color='blue')
+
+
+## -----------------------------------------------------------------------------
+#| fig-width: 8.6
+#| fig-height: 3.5
+
+# Create a random graph
+set.seed(123)
+g <- sample_pa(20)
+V(g)$degree <- degree(g)
+V(g)$name <- as.character(1:20)
+
+# Plot with default linear layout
+p1 <- ggplot(g, layout = "linear") +
+    geom_edge(geom=geom_curve) +
+    geom_point() +
+    ggtitle("Default Linear")
+
+# Plot with sorted linear layout
+p2 <- ggplot(g, layout = "linear", sort.by = "degree") +
+    geom_edge(geom=geom_curve) +
+    geom_point(aes(size = degree)) +
+    ggtitle("Sorted Linear (by degree)") 
+
+plot_list(p1, p2, ncol=1)
+
+
+## -----------------------------------------------------------------------------
+#| fig-width: 8.8
+#| fig-height: 6.5
 set.seed(123)
 expr <- abs(rnorm(10))
 d <- data.frame(label=V(net)$name, expression=expr)
 p %<+% d + geom_point(aes(color = expression), size=6) +
     scale_color_viridis_c()
 
-## ----fig.width=8, fig.height=5.8----------------------------------------------
+
+## -----------------------------------------------------------------------------
+#| fig-width: 8
+#| fig-height: 5.8
 flow_info <- data.frame(from = LETTERS[c(1,2,3,3,4,5,6)],
                         to = LETTERS[c(5,5,5,6,7,6,7)])
 
@@ -77,7 +122,10 @@ p %<+% dd +
     geom_text(aes(label=label), nudge_y = .2) + 
     coord_fixed()
 
-## ----fig.width=13, fig.height=7-----------------------------------------------
+
+## -----------------------------------------------------------------------------
+#| fig-width: 13
+#| fig-height: 7
 set.seed(123)
 x <- list(A = letters[1:10], B=letters[5:12], C=letters[sample(1:26, 15)])
 
@@ -91,7 +139,10 @@ p6 <- cnetplot(x, node_label = "exclusive")
 
 plot_list(p1, p2, p3, p4, p5, p6, ncol=3, tag_levels = 'A')
 
-## ----fig.width=8, fig.height=5------------------------------------------------
+
+## -----------------------------------------------------------------------------
+#| fig-width: 8
+#| fig-height: 5
 g1 <- cnetplot(x, node_label = letters[1:5]) 
 
 options(cnetplot_subset = TRUE)
@@ -99,7 +150,10 @@ g2 <- cnetplot(x, node_label = letters[1:5])
 
 plot_list(g1, g2)
 
-## ----fig.width=11, fig.height=8-----------------------------------------------
+
+## -----------------------------------------------------------------------------
+#| fig-width: 11
+#| fig-height: 8
 set.seed(123)
 d <- setNames(rnorm(26), letters)
 

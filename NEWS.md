@@ -1,3 +1,12 @@
+# ggtangle 0.1.0
+
++ `geom_edge_text()` to add text labels for edges (2025-12-24, Wed)
++ add `layout_fishbone` (2025-12-24, Wed)
++ add more layouts (2025-12-01, Mon)
+    - `layout_circular`
+    - `layout_linear`
++ use 'quarto' as vignette builder (2025-12-01, Mon)
+
 # ggtangle 0.0.9
 
 + add 'fc_threshold' to filter items by absolute fold change in `cnetplot()` (2025-11-30, Sun)
