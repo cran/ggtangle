@@ -3,6 +3,8 @@
 #' @importFrom ggplot2 scale_size
 #' @importFrom ggrepel geom_text_repel
 #' @method cnetplot list
+#' @param hilight_alpha transparent value for not selected to be highlight
+#' @param ... additional parameters. One important parameter is 'curvature' (default is 0), which can be used to curve the edges (e.g., `curvature = 0.2`).
 #' @export
 cnetplot.list <- function(
   x,
@@ -14,6 +16,7 @@ cnetplot.list <- function(
   size_item = 1,
   color_edge = "grey",
   size_edge = .5,
+  categorySizeBy = ~itemNum,
   node_label = "all",
   foldChange = NULL,
   fc_threshold = NULL,
@@ -21,8 +24,44 @@ cnetplot.list <- function(
   hilight_alpha = .3,
   ...
 ) {
+    dots <- list(...)
+    if (!is.null(dots$categorySize)) {
+        stop("`categorySize` is not supported; use `categorySizeBy` instead.")
+    }
+    dots$categorySize <- NULL
+
+    edge_layer_params <- list(linewidth = size_edge)
+    if (!is.null(dots$curvature)) {
+        edge_layer_params$curvature <- dots$curvature
+        edge_layer_params$geom <- ggplot2::geom_curve
+        dots$curvature <- NULL
+    }
+
+    ## `categorySizeBy` usage demonstrations
+    ## x <- list(A = letters[1:10], B = letters[5:12])
+    ## attr(x, "p.adjust") <- c(A = 0.01, B = 0.2)
+    ## cnetplot(x, node_label = "none", categorySizeBy = ~ -log10(p.adjust))
+
+    x_names <- names(x)
+    x_attr_names <- setdiff(names(attributes(x)), c("names", "row.names", "class"))
+    categoryAttr <- list()
+    for (attr_name in x_attr_names) {
+        attr_value <- attr(x, attr_name)
+        if (!is.numeric(attr_value)) {
+            next
+        }
+        if (!is.null(names(attr_value))) {
+            attr_value <- attr_value[x_names]
+        } else if (length(attr_value) == length(x)) {
+            names(attr_value) <- x_names
+        } else {
+            next
+        }
+        categoryAttr[[attr_name]] <- attr_value
+    }
+
     x <- subset_cnet_list(x, showCategory)
-    cnt <- setNames(sapply(x, length), names(x))
+    originalItemNum <- setNames(vapply(x, length, FUN.VALUE = numeric(1)), names(x))
 
     # node_label <- match.arg(node_label, c("category", "all", "none", "item", "gene", "exclusive", "share"))
     if (length(node_label) > 1) {
@@ -58,7 +97,44 @@ cnetplot.list <- function(
         x <- x[sapply(x, length) > 0]
     }
 
+    categorySizeQuo <- rlang::enquo(categorySizeBy)
+    categorySizeExpr <- rlang::quo_get_expr(categorySizeQuo)
+    if (rlang::is_formula(categorySizeExpr)) {
+        categorySizeExpr <- rlang::f_rhs(categorySizeExpr)
+    }
+    exprIsItemNum <- is.symbol(categorySizeExpr) && as.character(categorySizeExpr) == "itemNum"
+
+    categoryNames <- names(x)
+    categoryDf <- data.frame(
+        category = categoryNames,
+        itemNum = vapply(x, length, FUN.VALUE = numeric(1)),
+        stringsAsFactors = FALSE
+    )
+    if (length(categoryAttr) > 0) {
+        for (attr_name in names(categoryAttr)) {
+            categoryDf[[attr_name]] <- categoryAttr[[attr_name]][categoryNames]
+        }
+    }
+
+    categorySizeValues <- rlang::eval_tidy(categorySizeExpr, data = categoryDf)
+    if (!is.numeric(categorySizeValues)) {
+        stop("`categorySizeBy` must evaluate to a numeric vector.")
+    }
+    if (length(categorySizeValues) == 1) {
+        categorySizeValues <- rep(categorySizeValues, nrow(categoryDf))
+    }
+    if (length(categorySizeValues) != nrow(categoryDf)) {
+        stop("`categorySizeBy` must return a scalar or one value per category.")
+    }
+    if (anyNA(categorySizeValues)) {
+        stop("`categorySizeBy` returned NA values.")
+    }
+
     g <- list2graph(x)
+
+    is_cat <- V(g)$.isCategory
+    vals <- setNames(categorySizeValues, categoryNames)
+    V(g)$size[is_cat] <- vals[V(g)$name[is_cat]]
 
     V(g)$.hilight <- 1
     if (all(hilight != "none")) {
@@ -80,27 +156,39 @@ cnetplot.list <- function(
         fc_mapping <- aes(color = I(color_item), alpha = I(.data$.hilight))
     }
 
-    p <- ggplot(g, layout = layout, ...)
+    p <- do.call(ggplot, c(list(g, layout = layout), dots))
 
     ## restore original category size
     if (
         length(node_label) > 1 &&
             getOption("cnetplot_subset", default = FALSE)
     ) {
-        p$data$size[match(names(cnt), p$data$label)] <- cnt
+        if (exprIsItemNum) {
+            keep_idx <- match(names(originalItemNum), p$data$label)
+            keep_idx <- keep_idx[!is.na(keep_idx)]
+            p$data$size[keep_idx] <- originalItemNum[p$data$label[keep_idx]]
+        }
     }
 
-    if (color_edge == "category") {
-        ed <- get_edge_data(g)
+    if (is.na(color_edge)) {
+        p <- p
+    } else if (isTRUE(color_edge == "category")) {
+        ed <- get_edge_data(g, names = TRUE)
         names(ed)[1] <- "category"
         p <- p +
-            geom_edge(
-                aes(color = .data$category),
-                data = ed,
-                linewidth = size_edge
+            do.call(
+                geom_edge,
+                c(
+                    list(
+                        aes(color = .data$category),
+                        data = ed
+                    ),
+                    edge_layer_params
+                )
             )
     } else {
-        p <- p + geom_edge(color = color_edge, linewidth = size_edge)
+        edge_layer_params$color <- color_edge
+        p <- p + do.call(geom_edge, edge_layer_params)
     }
 
     p <- p +
@@ -110,6 +198,26 @@ cnetplot.list <- function(
             color = color_category
         )
     if (size_item > 0) {
+        vals <- categorySizeValues
+        if (
+            exprIsItemNum &&
+                length(node_label) > 1 &&
+                getOption("cnetplot_subset", default = FALSE)
+        ) {
+            originalItemNum <- originalItemNum[names(x)]
+            vals <- originalItemNum
+        }
+        vals <- vals[is.finite(vals)]
+        size_breaks <- if (length(vals) > 0) {
+            pretty(vals, n = min(4, length(unique(vals))))
+        } else {
+            NULL
+        }
+        if (missing(categorySizeBy) && exprIsItemNum) {
+            size_name <- "size"
+        } else {
+            size_name <- rlang::as_label(categorySizeExpr)
+        }
         p <- p +
             ggnewscale::new_scale_color() +
             geom_point(
@@ -118,8 +226,9 @@ cnetplot.list <- function(
                 size = 3 * size_item
             ) +
             scale_size(
+                name = size_name,
                 range = c(3, 8) * size_category,
-                breaks = pretty(cnt, n = min(4, diff(range(cnt))))
+                breaks = size_breaks
             )
     }
 

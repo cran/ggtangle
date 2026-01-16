@@ -124,9 +124,9 @@ geom_edge_text <- function(mapping=NULL, data=NULL, geom = geom_text, angle_calc
 #' @importFrom igraph edge_attr
 #' @importFrom igraph edge_attr_names
 #' @importFrom igraph V
-get_edge_data <- function(g) {
+get_edge_data <- function(g, names = FALSE) {
     # Use names=FALSE to get integer indices, avoiding ambiguity with non-unique labels
-    e <- as.data.frame(as_edgelist(g, names = FALSE))
+    e <- as.data.frame(as_edgelist(g, names = names))
     enames <- edge_attr_names(g)
     if(length(enames) > 0) {
         for (eattr in enames) {
@@ -152,32 +152,40 @@ get_edge_plot_data <- function(object, plot) {
     
     d <- plot$data
     
-    # Match based on indices
-    # e[,1] and e[,2] are 1-based indices from as_edgelist(g, names=FALSE)
-    # d is the layout dataframe, assumed to be in same order as V(g)
-    # We can match by row index directly.
-    
-    # Note: If layout_data reordered nodes, this assumption breaks.
-    # But standard layout functions usually return coordinates for V(g) in order.
-    # d should have row names 1:N or we rely on row index.
-    
-    # d1 corresponds to e[,1] (from)
-    # d2 corresponds to e[,2] (to)
-    
-    # Check if indices are valid
-    if (max(e[,1], e[,2]) > nrow(d)) {
-         stop("Edge indices exceed node data rows. Mismatch between graph and layout data.")
+    # Check if edge list uses names (character/factor) or indices (numeric)
+    if (is.character(e[,1]) || is.factor(e[,1])) {
+        if (is.null(d$label)) {
+            stop("Layout data missing 'label' column, cannot match named edges.")
+        }
+        idx1 <- match(as.character(e[,1]), as.character(d$label))
+        idx2 <- match(as.character(e[,2]), as.character(d$label))
+        
+        if (any(is.na(idx1)) | any(is.na(idx2))) {
+            stop("Some edge names not found in layout labels.")
+        }
+    } else {
+        # Match based on indices
+        # e[,1] and e[,2] are 1-based indices from as_edgelist(g, names=FALSE)
+        idx1 <- e[,1]
+        idx2 <- e[,2]
+        
+        # Check if indices are valid
+        if (max(idx1, idx2) > nrow(d)) {
+             stop("Edge indices exceed node data rows. Mismatch between graph and layout data.")
+        }
     }
     
-    d1 <- d[e[,1], c("x", "y")]
-    d2 <- d[e[,2], c("x", "y")]
+    d1 <- d[idx1, c("x", "y")]
+    d2 <- d[idx2, c("x", "y")]
     
     names(d2) <- c("x2", "y2")
     dd <- cbind(d1, d2)
     edge_data <- cbind(e, dd)
+    if (.check_interactive_attr(object)){
+        edge_data$`.edge_id` <- paste0(e[,1], "_", e[,2]) 
+    }
     return(edge_data)
 }
-
 
 #' @importFrom ggplot2 ggplot_add
 #' @importFrom utils modifyList
@@ -254,4 +262,10 @@ ggplot_add.layer_edge_text <- function(object, plot, object_name, ...) {
     
     layer <- do.call(object$geom, geom_params)
     ggplot_add(layer, plot, object_name, ...)
+}
+
+.check_interactive_attr <- function(x){
+    attrs <- c("tooltip", "data_id", "onclick")
+    flag <- any(names(x$mapping) %in% attrs)
+    return(flag)
 }
