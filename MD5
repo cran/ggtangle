@@ -1,8 +1,8 @@
-a5d502d4535c67f2431e8b4a358bb254 *DESCRIPTION
+7c7d20422706cbb9262f29fe82859762 *DESCRIPTION
 c0da60d06eb306d1d2bf6d2f60078d9e *NAMESPACE
-a81f736e8471a306cfefb9b9e8f52153 *NEWS.md
-2cdb52d3407b66f98b01fae0658a1900 *R/AllGenerics.r
-7fa95a66ca274a0022340e7b07d19c2e *R/cnet.r
+b97f7a5b0a06f0b5cd8b814a872ef503 *NEWS.md
+b313ebacc32f0b49beaf76c8cf196a95 *R/AllGenerics.r
+c544c95d4dfde2b8962e58a266689916 *R/cnet.r
 d19d6c6a1905611830cbf8a85ba9f0d8 *R/drag-network.R
 da7bac5323d313dfbcdb38f8fbf613f0 *R/ggtangle-package.R
 9e7ab664d0c7e823958de58fb2b71b86 *R/graph-layout.R
@@ -16,9 +16,9 @@ ee4052913c1ecbe3fc15e81182555680 *R/zzz.R
 d54042561b90aafd8a9a202ea63e1e4b *build/partial.rdb
 9c705f28755c934688716f3dd778fe5d *build/vignette.rds
 a69d8f726ba10747e9a7302e1ed7d1cc *inst/doc/ggtangle.R
-31f3cbabdcecb3309b8ff1155ec1ec95 *inst/doc/ggtangle.html
+6e7bcd89670201832189f2f96ba0f9c6 *inst/doc/ggtangle.html
 c11217eedd873f383b391ea037cd4b28 *inst/doc/ggtangle.qmd
-87626edce7530525156d667d7140a1cc *man/cnetplot.Rd
+73947030493f9f3a837878028222d2d7 *man/cnetplot.Rd
 237c94fc6c800bfba7124b7b9f9a257d *man/drag_network.Rd
 4d57b24ce424a1f88d3484dd5ef60a4b *man/geom_cnet_label.Rd
 da27a6523a15f35ddb7f1c15c834ff31 *man/geom_edge.Rd
