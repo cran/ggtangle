@@ -1,6 +1,6 @@
 Package: ggtangle
 Title: Draw Network with Data
-Version: 0.1.2
+Version: 0.1.3
 Authors@R: c(
     person(given = "Guangchuang", family = "Yu", email = "guangchuangyu@gmail.com",   role  = c("aut", "cre"), comment = c(ORCID = "0000-0002-6485-8781")))
 Description: Extends the 'ggplot2' plotting system to support network visualization. Inspired by the 'Method 1' in 'ggtree' (G Yu (2018) <doi:10.1093/molbev/msy194>), 'ggtangle' is designed to work with network associated data. 
@@ -12,11 +12,11 @@ Suggests: aplot, cli, ggiraph, ggnewscale, ggtree, quarto, scatterpie
 VignetteBuilder: quarto
 License: Artistic-2.0
 Encoding: UTF-8
-RoxygenNote: 7.3.3
+Config/roxygen2/version: 8.1.0
 NeedsCompilation: no
-Packaged: 2026-04-22 14:17:44 UTC; HUAWEI
+Packaged: 2026-09-24 04:57:30 UTC; wang
 Author: Guangchuang Yu [aut, cre] (ORCID:
     <https://orcid.org/0000-0002-6485-8781>)
 Maintainer: Guangchuang Yu <guangchuangyu@gmail.com>
 Repository: CRAN
-Date/Publication: 2026-04-22 14:50:02 UTC
+Date/Publication: 2026-09-24 08:00:13 UTC

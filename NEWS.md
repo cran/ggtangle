@@ -1,3 +1,11 @@
+# ggtangle 0.1.3
+
++ `cnetplot()` supports `node_label_size` to control the size of the node label text (2026-09-22, Tue)
+    - affects `enrichplot::cnetplot()` for `enrichResult`/`gseaResult`/`compareClusterResult`/(`mnseaResult`)
+    - when `NULL` (default), the built-in label size is used
++ `mechgraph` object supports
++ `size_category=0` in `cnetplot` will disable the drawing of category nodes (2026-04-24, Fri)
+
 # ggtangle 0.1.2
 
 + fix: handle node_label = "none" in cnet label layer (2026-04-22, Wed)
