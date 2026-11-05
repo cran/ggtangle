@@ -67,7 +67,7 @@ name.}
 
 \item{size_edge}{relative size of edge}
 
-\item{categorySizeBy}{An expression (e.g., \code{itemNum}, \code{p.adjust}) or a formula (e.g., \code{~ -log10(p.adjust)}) to set the category node size.}
+\item{categorySizeBy}{An expression (e.g., \code{itemNum}, \code{p.adjust}) or a formula (e.g., \code{~ -log10(p.adjust)}) to set the category node size. A single column name given as a string (e.g., \code{categorySize = "pvalue"}, the legacy argument, which R matches onto \code{categorySizeBy}) is accepted as well, provided the gene-set list carries numeric values for that column.}
 
 \item{node_label}{one of 'all', 'none', 'category', 'item', 'exclusive' or 'share'}
 
@@ -88,7 +88,13 @@ the built-in label size is used.}
 layer with the same radial control-point geometry as the former
 \code{ggraph::geom_edge_arc()} implementation. In circular mode, any non-zero
 curvature enables this arc layer; the arc geometry is intentionally kept
-compatible with the former backend.}
+compatible with the former backend. Legacy \code{enrichplot} arguments are
+also accepted: \code{colorEdge = TRUE} colors edges by category, and
+\code{circular = TRUE} selects the circular layout. A legacy
+\code{categorySize = "pvalue"} style argument is accepted as well: a single
+column name is evaluated the same way as \code{categorySizeBy}, provided the
+gene-set list carries numeric values for it (enrichment results attach
+them automatically).}
 }
 \description{
 category-item network plot

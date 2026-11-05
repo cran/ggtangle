@@ -1,3 +1,11 @@
+# ggtangle 0.1.5
+
++ `cnetplot()` again accepts the legacy `categorySize = "pvalue"` style column name for
+  plain gene-set lists. R partial-matched the argument onto `categorySizeBy`, so the
+  "not supported" guard never fired and users instead saw "`categorySizeBy` must
+  evaluate to a numeric vector"; missing values now raise an explanatory error.
+  Fixes <https://github.com/YuLab-SMU/enrichplot/issues/346> (2026-11-04, Wed)
+
 # ggtangle 0.1.4
 
 + `layout_cnet_category_rail()` provides a category-rail layout for tracing item-category

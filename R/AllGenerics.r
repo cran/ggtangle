@@ -13,7 +13,7 @@
 #' @param size_item relative size of the item (e.g., genes)
 #' @param color_edge color of edge, e.g., "black". If `color = "category"`, then edges will be colored based on the category information.
 #' @param size_edge relative size of edge
-#' @param categorySizeBy An expression (e.g., `itemNum`, `p.adjust`) or a formula (e.g., `~ -log10(p.adjust)`) to set the category node size.
+#' @param categorySizeBy An expression (e.g., `itemNum`, `p.adjust`) or a formula (e.g., `~ -log10(p.adjust)`) to set the category node size. A single column name given as a string (e.g., `categorySize = "pvalue"`, the legacy argument, which R matches onto `categorySizeBy`) is accepted as well, provided the gene-set list carries numeric values for that column.
 #' @param node_label one of 'all', 'none', 'category', 'item', 'exclusive' or 'share'
 #' @param node_label_size size of the node label text. When `NULL` (default)
 #'   the built-in label size is used.

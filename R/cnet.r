@@ -13,7 +13,13 @@
 #'   layer with the same radial control-point geometry as the former
 #'   `ggraph::geom_edge_arc()` implementation. In circular mode, any non-zero
 #'   curvature enables this arc layer; the arc geometry is intentionally kept
-#'   compatible with the former backend.
+#'   compatible with the former backend. Legacy `enrichplot` arguments are
+#'   also accepted: `colorEdge = TRUE` colors edges by category, and
+#'   `circular = TRUE` selects the circular layout. A legacy
+#'   `categorySize = "pvalue"` style argument is accepted as well: a single
+#'   column name is evaluated the same way as `categorySizeBy`, provided the
+#'   gene-set list carries numeric values for it (enrichment results attach
+#'   them automatically).
 #' @export
 cnetplot.list <- function(
   x,
@@ -35,10 +41,27 @@ cnetplot.list <- function(
   ...
 ) {
     dots <- list(...)
-    if (!is.null(dots$categorySize)) {
-        stop("`categorySize` is not supported; use `categorySizeBy` instead.")
-    }
+    ## Legacy `enrichplot`-era arguments. `colorEdge` / `circular` have no
+    ## formals, so they arrive via `...`. `categorySize` has no formal either,
+    ## but R partial-matches it onto `categorySizeBy`, where it is handled
+    ## below; the `...` route is kept for exact named calls (e.g. `do.call`).
+    legacy_category_size <- dots$categorySize
     dots$categorySize <- NULL
+
+    if (isTRUE(dots$circular)) {
+        layout <- "layout_circular"
+    }
+    dots$circular <- NULL
+
+    color_edge_legacy <- dots$colorEdge
+    dots$colorEdge <- NULL
+    if (!is.null(color_edge_legacy) && identical(color_edge, "grey")) {
+        if (isTRUE(color_edge_legacy)) {
+            color_edge <- "category"
+        } else if (rlang::is_string(color_edge_legacy)) {
+            color_edge <- color_edge_legacy
+        }
+    }
 
     edge_layer_params <- list(linewidth = size_edge)
     if (!is.null(dots$curvature)) {
@@ -112,6 +135,17 @@ cnetplot.list <- function(
     if (rlang::is_formula(categorySizeExpr)) {
         categorySizeExpr <- rlang::f_rhs(categorySizeExpr)
     }
+    ## The generic has no `categorySize` formal, so R binds a legacy
+    ## `categorySize = "pvalue"` onto `categorySizeBy` by partial matching
+    ## and the value shows up here as a character literal. Translate it to
+    ## the size column, mirroring `enrichplot::cnetplot()` for enrichment
+    ## results (YuLab-SMU/enrichplot#346).
+    if (is.null(legacy_category_size) && rlang::is_string(categorySizeExpr)) {
+        legacy_category_size <- categorySizeExpr
+    }
+    if (!is.null(legacy_category_size)) {
+        categorySizeExpr <- translate_cnet_category_size(legacy_category_size)
+    }
     exprIsItemNum <- is.symbol(categorySizeExpr) && as.character(categorySizeExpr) == "itemNum"
 
     categoryNames <- names(x)
@@ -123,6 +157,21 @@ cnetplot.list <- function(
     if (length(categoryAttr) > 0) {
         for (attr_name in names(categoryAttr)) {
             categoryDf[[attr_name]] <- categoryAttr[[attr_name]][categoryNames]
+        }
+    }
+
+    if (!is.null(legacy_category_size) && is.symbol(categorySizeExpr)) {
+        legacy_col <- as.character(categorySizeExpr)
+        if (!legacy_col %in% names(categoryDf)) {
+            stop(
+                sprintf("`categorySize = \"%s\"` requires a numeric `%s` value per category.",
+                        as.character(legacy_category_size), legacy_col),
+                "\nA plain gene-set list carries no statistics. Either pass the",
+                " enrichment result itself (e.g. `cnetplot(enrichResult, ...)`),",
+                " or attach the values as a named numeric attribute, e.g. ",
+                sprintf("`attr(x, \"%s\") <- c(A = 0.01, B = 0.02)`.", legacy_col),
+                call. = FALSE
+            )
         }
     }
 
@@ -341,6 +390,18 @@ geom_cnet_label <- function(
     )
 }
 
+
+translate_cnet_category_size <- function(name) {
+    if (!rlang::is_string(name)) {
+        stop("`categorySize` must be a single column name, e.g. \"pvalue\".",
+             call. = FALSE)
+    }
+    key <- tolower(trimws(name))
+    if (key %in% c("genenum", "count", "itemnum")) {
+        return(rlang::sym("itemNum"))
+    }
+    rlang::sym(name)
+}
 
 subset_cnet_list <- function(x, showCategory) {
     if (!is.numeric(showCategory)) {
